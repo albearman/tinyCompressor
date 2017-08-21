@@ -17,7 +17,7 @@ foreach ($tmp as $k => $v) {
     $setting = $modx->newObject('modSystemSetting');
     $setting->fromArray(array_merge(
         array(
-            'key' => 'tinycompress_' . $k,
+            'key' => 'tinycompressor_' . $k,
             'namespace' => PKG_NAME_LOWER,
         ), $v
     ), '', true, true);
