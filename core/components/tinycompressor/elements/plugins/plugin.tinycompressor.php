@@ -11,4 +11,15 @@ switch ($modx->event->name) {
         $tinycompressor->compress($files, $directory);
 
         break;
+
+    case 'OnFileManagerFileCreate':
+
+        /**
+         * @var tinycompressor $tinycompressor
+         */
+        require_once($modx->getOption('core_path') . 'components/tinycompressor/model/tinycompressor/tinycompressor.class.php');
+        $tinycompressor = new tinycompressor($modx);
+        $tinycompressor->compress($files, $directory);
+
+        break;
 }

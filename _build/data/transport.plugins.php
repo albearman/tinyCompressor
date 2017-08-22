@@ -9,7 +9,8 @@ $tmp = array(
         'file' => 'tinycompressor',
         'description' => 'Smart PNG and JPEG compression for MODx Revolution.',
         'events' => array(
-            'OnFileManagerUpload' => array()
+            'OnFileManagerUpload' => array(),
+            'OnFileManagerFileCreate' => array()
         )
     )
 );
