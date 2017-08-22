@@ -229,12 +229,19 @@ if (defined('BUILD_PLUGIN_UPDATE')) {
 
 $vehicle = $builder->createVehicle($category, $attr);
 
-// now pack in resolvers
 $vehicle->resolve('file', array(
     'source' => $sources['source_core'],
     'target' => "return MODX_CORE_PATH . 'components/';",
 ));
 
+foreach ($BUILD_RESOLVERS as $resolver) {
+    if ($vehicle->resolve('php', array('source' => $sources['resolvers'] . 'resolve.' . $resolver . '.php'))) {
+        $modx->log(modX::LOG_LEVEL_INFO, 'Added resolver "' . $resolver . '" to category.');
+    } else {
+        $modx->log(modX::LOG_LEVEL_INFO, 'Could not add resolver "' . $resolver . '" to category.');
+    }
+}
+flush();
 $builder->putVehicle($vehicle);
 
 /** @var array $BUILD_CHUNKS */

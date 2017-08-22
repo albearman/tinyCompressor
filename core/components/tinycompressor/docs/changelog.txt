@@ -1,5 +1,12 @@
 Changelog for tinycompressor.
 
+
+1.0.1-beta
+==============
+- Integration on msGallery2
+- Integration on phpThumb
+- Add Exception
+
 1.0.0-beta
 ==============
 - Image Compression

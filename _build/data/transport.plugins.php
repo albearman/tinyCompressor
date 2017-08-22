@@ -10,7 +10,8 @@ $tmp = array(
         'description' => 'Smart PNG and JPEG compression for MODx Revolution.',
         'events' => array(
             'OnFileManagerUpload' => array(),
-            'OnFileManagerFileCreate' => array()
+            'OnFileManagerFileCreate' => array(),
+            'OnPhpThumbRenderToFile'  => array()
         )
     )
 );

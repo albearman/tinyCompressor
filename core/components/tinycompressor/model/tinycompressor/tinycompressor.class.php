@@ -65,7 +65,7 @@ class tinycompressor
      * @param $path Path to file
      * @param string $type file|buffer|url
      */
-    private function compressImage($path, $type = 'file')
+    public function compressImage($path, $type = 'file')
     {
         $this->connector();
 
