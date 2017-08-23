@@ -54,7 +54,7 @@ class Client {
         if ($mod == 'crazy') {
             unset($this->options[CURLOPT_USERPWD], $this->options[CURLOPT_CAINFO], $this->options[CURLOPT_SSL_VERIFYPEER]);
             $this->options[CURLOPT_USERAGENT] = join(" ", array_filter(array('Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36')));
-            $this->setApiEndpoint('https://tinypng.com/site');
+            $this->setApiEndpoint('https://tinypng.com/web');
         }
 
 
