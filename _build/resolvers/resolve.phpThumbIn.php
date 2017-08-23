@@ -13,8 +13,8 @@ if ($transport->xpdo) {
             $phpThFile = file_get_contents($phpThumbPath);
 
             $phpThFile = str_replace(
-                '@chmod($renderfilename, $this->getParameter(\'config_file_create_mask\'));',
-                '@chmod($renderfilename, $this->getParameter(\'config_file_create_mask\'));
+                'if (file_put_contents($renderfilename, $this->outputImageData)) {',
+                'if (file_put_contents($renderfilename, $this->outputImageData)) {
                 $this->modx->invokeEvent(\'OnPhpThumbRenderToFile\', array(\'filename\' => $renderfilename));',
                 $phpThFile);
 

@@ -234,6 +234,8 @@ $vehicle->resolve('file', array(
     'target' => "return MODX_CORE_PATH . 'components/';",
 ));
 
+$builder->putVehicle($vehicle);
+
 foreach ($BUILD_RESOLVERS as $resolver) {
     if ($vehicle->resolve('php', array('source' => $sources['resolvers'] . 'resolve.' . $resolver . '.php'))) {
         $modx->log(modX::LOG_LEVEL_INFO, 'Added resolver "' . $resolver . '" to category.');
