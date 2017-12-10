@@ -1,11 +1,7 @@
 --------------------
-tinycompressor
+tinyCompressor
 --------------------
-Author: Alexey Medvedev <ufo.medved@mail.ru>
+Author: Alexey Medvedev (medvedevav@itzavr.ru)
 --------------------
 
-Smart PNG and JPEG compression for MODx Revolution.
-Optimize your images with a perfect balance in quality and file size.
-
-Feel free to suggest ideas/improvements/bugs on GitHub:
-https://github.com/JiminikJilis/tinycompressor
+Компонент для сжатий загружаемых изображений и pdf-файлов

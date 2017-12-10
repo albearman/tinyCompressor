@@ -3,32 +3,23 @@
 namespace Tinify;
 
 class Client {
-
-    private $api_endpoint = 'https://api.tinify.com';
+    const API_ENDPOINT = "https://api.tinify.com";
 
     const RETRY_COUNT = 1;
     const RETRY_DELAY = 500;
 
-    private $options;
-
+    protected $options;
 
     public static function userAgent() {
         $curl = curl_version();
         return "Tinify/" . VERSION . " PHP/" . PHP_VERSION . " curl/" . $curl["version"];
     }
 
-    function getApiEndpoint() {
-        return $this->api_endpoint;
-    }
-    function setApiEndpoint($url) {
-        $this->api_endpoint = $url;
-    }
-
     private static function caBundle() {
         return __DIR__ . "/../data/cacert.pem";
     }
 
-    function __construct($key, $app_identifier = NULL, $proxy = NULL, $mod = 'api') {
+    function __construct($key, $app_identifier = NULL, $proxy = NULL) {
         $curl = curl_version();
 
         if (!($curl["features"] & CURL_VERSION_SSL)) {
@@ -49,15 +40,6 @@ class Client {
             CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_USERAGENT => join(" ", array_filter(array(self::userAgent(), $app_identifier))),
         );
-
-
-        if ($mod == 'crazy') {
-            unset($this->options[CURLOPT_USERPWD], $this->options[CURLOPT_CAINFO], $this->options[CURLOPT_SSL_VERIFYPEER]);
-            $this->options[CURLOPT_USERAGENT] = join(" ", array_filter(array('Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36')));
-            $this->setApiEndpoint('https://tinypng.com/web');
-        }
-
-
 
         if ($proxy) {
             $parts = parse_url($proxy);
@@ -109,7 +91,8 @@ class Client {
 
             curl_setopt_array($request, $this->options);
 
-            $url = strtolower(substr($url, 0, 6)) == "https:" ? $url : $this->api_endpoint . $url;
+            $url = strtolower(substr($url, 0, 6)) == "https:" ? $url : self::API_ENDPOINT . $url;
+
             curl_setopt($request, CURLOPT_URL, $url);
             curl_setopt($request, CURLOPT_CUSTOMREQUEST, strtoupper($method));
 

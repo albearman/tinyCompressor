@@ -70,96 +70,6 @@ if (defined('BUILD_SETTING_UPDATE')) {
     unset($settings, $setting, $attributes);
 }
 
-// load plugins events
-if (defined('BUILD_EVENT_UPDATE')) {
-    $events = include $sources['data'] . 'transport.events.php';
-    if (!is_array($events)) {
-        $modx->log(modX::LOG_LEVEL_ERROR, 'Could not package in events.');
-    } else {
-        $attributes = array(
-            xPDOTransport::PRESERVE_KEYS => true,
-            xPDOTransport::UPDATE_OBJECT => BUILD_EVENT_UPDATE,
-        );
-        foreach ($events as $event) {
-            $vehicle = $builder->createVehicle($event, $attributes);
-            $builder->putVehicle($vehicle);
-        }
-        $modx->log(xPDO::LOG_LEVEL_INFO, 'Packaged in ' . count($events) . ' Plugins events.');
-    }
-    unset ($events, $event, $attributes);
-}
-
-// package in default access policy
-if (defined('BUILD_POLICY_UPDATE')) {
-    $attributes = array(
-        xPDOTransport::PRESERVE_KEYS => false,
-        xPDOTransport::UNIQUE_KEY => array('name'),
-        xPDOTransport::UPDATE_OBJECT => BUILD_POLICY_UPDATE,
-    );
-    $policies = include $sources['data'] . 'transport.policies.php';
-    if (!is_array($policies)) {
-        $modx->log(modX::LOG_LEVEL_FATAL, 'Adding policies failed.');
-    }
-    foreach ($policies as $policy) {
-        $vehicle = $builder->createVehicle($policy, $attributes);
-        $builder->putVehicle($vehicle);
-    }
-    $modx->log(modX::LOG_LEVEL_INFO, 'Packaged in ' . count($policies) . ' Access Policies.');
-    flush();
-    unset($policies, $policy, $attributes);
-}
-
-// package in default access policy templates
-if (defined('BUILD_POLICY_TEMPLATE_UPDATE')) {
-    $templates = include dirname(__FILE__) . '/data/transport.policytemplates.php';
-    $attributes = array(
-        xPDOTransport::PRESERVE_KEYS => false,
-        xPDOTransport::UNIQUE_KEY => array('name'),
-        xPDOTransport::UPDATE_OBJECT => BUILD_POLICY_TEMPLATE_UPDATE,
-        xPDOTransport::RELATED_OBJECTS => true,
-        xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array(
-            'Permissions' => array(
-                xPDOTransport::PRESERVE_KEYS => false,
-                xPDOTransport::UPDATE_OBJECT => BUILD_PERMISSION_UPDATE,
-                xPDOTransport::UNIQUE_KEY => array('template', 'name'),
-            ),
-        ),
-    );
-    if (is_array($templates)) {
-        foreach ($templates as $template) {
-            $vehicle = $builder->createVehicle($template, $attributes);
-            $builder->putVehicle($vehicle);
-        }
-        $modx->log(modX::LOG_LEVEL_INFO, 'Packaged in ' . count($templates) . ' Access Policy Templates.');
-        flush();
-    } else {
-        $modx->log(modX::LOG_LEVEL_ERROR, 'Could not package in Access Policy Templates.');
-    }
-    unset ($templates, $template, $attributes);
-}
-
-// Load menus
-if (defined('BUILD_MENU_UPDATE')) {
-    $menus = include $sources['data'] . 'transport.menu.php';
-    $attributes = array(
-        xPDOTransport::PRESERVE_KEYS => true,
-        xPDOTransport::UPDATE_OBJECT => BUILD_MENU_UPDATE,
-        xPDOTransport::UNIQUE_KEY => 'text',
-        xPDOTransport::RELATED_OBJECTS => true,
-    );
-    if (is_array($menus)) {
-        foreach ($menus as $menu) {
-            $vehicle = $builder->createVehicle($menu, $attributes);
-            $builder->putVehicle($vehicle);
-            /** @var modMenu $menu */
-            $modx->log(modX::LOG_LEVEL_INFO, 'Packaged in menu "' . $menu->get('text') . '".');
-        }
-    } else {
-        $modx->log(modX::LOG_LEVEL_ERROR, 'Could not package in menu.');
-    }
-    unset($vehicle, $menus, $menu, $attributes);
-}
-
 
 // create category
 $modx->log(xPDO::LOG_LEVEL_INFO, 'Created category.');
@@ -174,37 +84,15 @@ $attr = array(
     xPDOTransport::RELATED_OBJECTS => true,
 );
 
-// add snippets
-if (defined('BUILD_SNIPPET_UPDATE')) {
-    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Snippets'] = array(
-        xPDOTransport::PRESERVE_KEYS => false,
-        xPDOTransport::UPDATE_OBJECT => BUILD_SNIPPET_UPDATE,
-        xPDOTransport::UNIQUE_KEY => 'name',
-    );
-    $snippets = include $sources['data'] . 'transport.snippets.php';
-    if (!is_array($snippets)) {
-        $modx->log(modX::LOG_LEVEL_ERROR, 'Could not package in snippets.');
+foreach ($BUILD_RESOLVERS as $resolver) {
+    if ($vehicle->resolve('php', array('source' => $sources['resolvers'] . 'resolve.' . $resolver . '.php'))) {
+        $modx->log(modX::LOG_LEVEL_INFO, 'Added resolver "' . $resolver . '" to category.');
     } else {
-        $category->addMany($snippets);
-        $modx->log(modX::LOG_LEVEL_INFO, 'Packaged in ' . count($snippets) . ' snippets.');
+        $modx->log(modX::LOG_LEVEL_INFO, 'Could not add resolver "' . $resolver . '" to category.');
     }
 }
-
-// add chunks
-if (defined('BUILD_CHUNK_UPDATE')) {
-    $attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Chunks'] = array(
-        xPDOTransport::PRESERVE_KEYS => false,
-        xPDOTransport::UPDATE_OBJECT => BUILD_CHUNK_UPDATE,
-        xPDOTransport::UNIQUE_KEY => 'name',
-    );
-    $chunks = include $sources['data'] . 'transport.chunks.php';
-    if (!is_array($chunks)) {
-        $modx->log(modX::LOG_LEVEL_ERROR, 'Could not package in chunks.');
-    } else {
-        $category->addMany($chunks);
-        $modx->log(modX::LOG_LEVEL_INFO, 'Packaged in ' . count($chunks) . ' chunks.');
-    }
-}
+flush();
+$builder->putVehicle($vehicle);
 
 // add plugins
 if (defined('BUILD_PLUGIN_UPDATE')) {
@@ -236,15 +124,6 @@ $vehicle->resolve('file', array(
 
 $builder->putVehicle($vehicle);
 
-foreach ($BUILD_RESOLVERS as $resolver) {
-    if ($vehicle->resolve('php', array('source' => $sources['resolvers'] . 'resolve.' . $resolver . '.php'))) {
-        $modx->log(modX::LOG_LEVEL_INFO, 'Added resolver "' . $resolver . '" to category.');
-    } else {
-        $modx->log(modX::LOG_LEVEL_INFO, 'Could not add resolver "' . $resolver . '" to category.');
-    }
-}
-flush();
-$builder->putVehicle($vehicle);
 
 /** @var array $BUILD_CHUNKS */
 // now pack in the license file, readme and setup options
