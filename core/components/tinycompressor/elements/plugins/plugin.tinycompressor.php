@@ -38,9 +38,7 @@ switch ($modx->event->name) {
 
     case 'OnPhpThumbRenderToFile':
 
-        if ( $this->modx->getOption('tinycompressor_tinypng_thumb_enable', $config,
-            true
-        ) == true ) {
+        if ( $modx->getOption('tinycompressor_tinypng_thumb_enable', $config,true) == true ) {
             $compressor = $modx->getService('tinycompressor', 'tinyCompressor', $modx->getOption('tinycompressor_core_path', null,
                     $modx->getOption('core_path') . 'components/tinycompressor/') . 'model/tinycompressor/', $scriptProperties);
             $compressor->compressionImage($filename);

@@ -33,7 +33,7 @@ class tinyCompressor
         );
 
         $tinyPNGApiKey = $this->modx->getOption('tinycompressor_tinypng_api_key', $config,
-            false
+            ''
         );
 
         $iLovePDFUploadEnable = $this->modx->getOption('tinycompressor_ilovepdf_upload_enable', $config,
@@ -41,10 +41,10 @@ class tinyCompressor
         );
 
         $iLovePDFProjectID = $this->modx->getOption('tinycompressor_ilovepdf_project_id', $config,
-            false
+            ''
         );
         $iLovePDFProjectKey = $this->modx->getOption('tinycompressor_ilovepdf_project_key', $config,
-            false
+            ''
         );
 
         $iLovePDFCompressionLevel = $this->modx->getOption('tinycompressor_ilovepdf_compression_level', $config,
@@ -196,6 +196,7 @@ class tinyCompressor
                 } catch (Exception $e)
                 {
                     $this->modx->log(xPDO::LOG_LEVEL_ERROR,$this->modx->lexicon('tinycompressor_error_compress', array('msg' => $e->getMessage())));
+                    return false;
                 }
 
                 if ( $new_path != false ) {
@@ -207,6 +208,7 @@ class tinyCompressor
                 } catch (Exception $e)
                 {
                     $this->modx->log(xPDO::LOG_LEVEL_ERROR,$this->modx->lexicon('tinycompressor_error_save', array('msg' => $e->getMessage())));
+                    return false;
                 }
 
 
@@ -264,8 +266,12 @@ class tinyCompressor
     function createTinyPNG() {
 
         require_once $this->config['modelPath'] . '/tinycompressor/lib/tinify/init_tinify.php';
-        $this->tinyPNGClient = ($this->config['tinyPNGApiKey'] == false ) ? false : new Tinify\Client($this->config['tinyPNGApiKey']);
+        $this->tinyPNGClient = (empty(trim($this->config['tinyPNGApiKey'])) ) ? false : new Tinify\Client
+        ($this->config['tinyPNGApiKey']);
         $this->tinyPNGCrazyClient = new Tinify\CrazyClient();
+        if ($this->tinyPNGClient == false){
+            $this->config['tinyPNGApiKey'] == 'crazy';
+        }
         \Tinify\setKey($this->config['tinyPNGApiKey']);
         return true;
     }
@@ -273,7 +279,7 @@ class tinyCompressor
     function createILovePDF()
     {
         require_once $this->config['modelPath'] . '/tinycompressor/lib/ilovepdf/init_ilovepdf.php';
-        $this->iLovePDF = ($this->config['iLovePDFProjectID'] == false || $this->config['iLovePDFProjectKey'] == false ) ? false : new Ilovepdf\Ilovepdf($this->config['iLovePDFProjectID'], $this->config['iLovePDFProjectKey']);
+        $this->iLovePDF = (empty(trim($this->config['iLovePDFProjectID'])) || empty(trim($this->config['iLovePDFProjectKey'])) ) ? false : new Ilovepdf\Ilovepdf($this->config['iLovePDFProjectID'], $this->config['iLovePDFProjectKey']);
 
         return true;
 
