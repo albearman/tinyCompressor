@@ -1,17 +1,20 @@
 <?php
 /** @var modX $modx */
 /** @var tinyCompressor $compressor */
+
+$tinyCompressorDefaultPath = MODX_CORE_PATH . 'components/tinycompressor/model/tinycompressor/';
+
 switch ($modx->event->name) {
     case 'OnFileManagerUpload':
 
-        $compressor = $modx->getService('tinycompressor', 'tinyCompressor', $modx->getOption('tinycompressor_core_path', null,
-                $modx->getOption('core_path') . 'components/tinycompressor/').'model/tinycompressor/',$scriptProperties);
+        $compressor = $modx->getService('tinycompressor', 'tinyCompressor', $tinyCompressorDefaultPath,
+            $scriptProperties);
         $compressor->compression($files, $directory, $source);
         break;
 
     case 'OnFileManagerFileCreate':
-        $compressor = $modx->getService('tinycompressor', 'tinyCompressor', $modx->getOption('tinycompressor_core_path', null,
-                $modx->getOption('core_path') . 'components/tinycompressor/').'model/tinycompressor/',$scriptProperties);
+        $compressor = $modx->getService('tinycompressor', 'tinyCompressor', $tinyCompressorDefaultPath,
+            $scriptProperties);
 
         $file_path_info = pathinfo($path);
         $ext = strtolower($file_path_info['extension']);
@@ -38,9 +41,9 @@ switch ($modx->event->name) {
 
     case 'OnPhpThumbRenderToFile':
 
-        if ( $modx->getOption('tinycompressor_tinypng_thumb_enable', $config,true) == true ) {
-            $compressor = $modx->getService('tinycompressor', 'tinyCompressor', $modx->getOption('tinycompressor_core_path', null,
-                    $modx->getOption('core_path') . 'components/tinycompressor/') . 'model/tinycompressor/', $scriptProperties);
+        if ( $modx->getOption('tinycompressor_tinypng_thumb_enable', null,true) == true ) {
+            $compressor = $modx->getService('tinycompressor', 'tinyCompressor', $tinyCompressorDefaultPath,
+                $scriptProperties);
             $compressor->compressionImage($filename);
         }
 

@@ -20,9 +20,7 @@ class tinyCompressor
     {
         $this->modx =& $modx;
 
-        $corePath = $this->modx->getOption('tinycompressor_core_path', $config,
-            $this->modx->getOption('core_path') . 'components/tinycompressor/'
-        );
+        $corePath = MODX_CORE_PATH . 'components/tinycompressor/';
 
         $tinyUploadEnable = $this->modx->getOption('tinycompressor_tinypng_upload_enable', $config,
             false
@@ -67,6 +65,7 @@ class tinyCompressor
             'iLovePDFCompressionLevel'  => $iLovePDFCompressionLevel
         ), $config);
 
+        $this->modx->addPackage('tinycompressor', $this->config['modelPath']);
         $this->modx->lexicon->load('tinycompressor:default');
         $this->createClients();
 
@@ -105,7 +104,7 @@ class tinyCompressor
             if (
                 in_array( $file['type'],array('image/jpeg','image/png') )
                     &&
-                $this->config('tinyUploadEnable') == false
+                $this->config['tinyUploadEnable'] == false
             ) {
                 continue;
             }
@@ -113,7 +112,7 @@ class tinyCompressor
             if (
                 $file['type'] == 'application/pdf'
                     &&
-                $this->config('iLovePDFUploadEnable') == false
+                $this->config['iLovePDFUploadEnable'] == false
             ) {
                 continue;
             }
@@ -183,9 +182,11 @@ class tinyCompressor
                 }
 
                 if (filesize($path) < '5242880') {
+                    \Tinify\setKey('crazy');
                     \Tinify\Tinify::setClient($this->tinyPNGCrazyClient);
                 } else {
                     if ($this->tinyPNGClient != false) {
+                        \Tinify\setKey($this->config['tinyPNGApiKey']);
                         \Tinify\Tinify::setClient($this->tinyPNGClient);
                     } else {
                         return false;
@@ -266,13 +267,8 @@ class tinyCompressor
     function createTinyPNG() {
 
         require_once $this->config['modelPath'] . '/tinycompressor/lib/tinify/init_tinify.php';
-        $this->tinyPNGClient = (empty(trim($this->config['tinyPNGApiKey'])) ) ? false : new Tinify\Client
-        ($this->config['tinyPNGApiKey']);
+        $this->tinyPNGClient = (empty(trim($this->config['tinyPNGApiKey'])) ) ? false : new Tinify\Client($this->config['tinyPNGApiKey']);
         $this->tinyPNGCrazyClient = new Tinify\CrazyClient();
-        if ($this->tinyPNGClient == false){
-            $this->config['tinyPNGApiKey'] == 'crazy';
-        }
-        \Tinify\setKey($this->config['tinyPNGApiKey']);
         return true;
     }
 
